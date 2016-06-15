@@ -9,10 +9,14 @@ transformed data {
 	int<lower=1> N;
 	vector[N1+N2] x;
 	vector[N1+N2] mu;
+	real mY1;
+	real<lower=0> sdY1;
 	N <- N1 + N2;
 	for (n in 1:N1) x[n] <- x1[n];
 	for (n in 1:N2) x[N1+n] <- x2[n];
 	for (i in 1:N) mu[i] <- 0;
+	mY1 <- mean(y1);
+	sdY1 <- sd(y1);
 }
 parameters {
 	real<lower=0> eta_sq;
@@ -26,7 +30,6 @@ transformed parameters {
 }
 model {
 	matrix[N,N] Sigma;
-	matrix[N,N] L;
 	vector[N] y;
 
 
@@ -42,13 +45,14 @@ model {
 	for (k in 1:N)
 		Sigma[k,k] <- eta_sq + sigma_sq;
 	
-	L <- cholesky_decompose(Sigma);
 
 	eta_sq ~ cauchy(0,5);
 	inv_rho_sq ~ cauchy(0,5);
 	sigma_sq ~ cauchy(0,5);
+	y2 ~ normal(mY1, 5*sdY1);
+	
 
-	y ~ multi_normal_cholesky(mu, L);
+	y ~ multi_normal(mu, Sigma);
 }
 
 

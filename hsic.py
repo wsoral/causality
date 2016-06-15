@@ -62,6 +62,8 @@ def hsicTestGamma(X,Y,alpha=0.05,params =[-1.,-1.]):
     Kc = H.dot(K).dot(H)
     Lc = H.dot(L).dot(H)
 
+    anmHSIC = ((m - 1)**-2) * np.sum(npml.diag(K.dot(H).dot(L).dot(H)))
+
     testStat = 1/m * np.sum(np.multiply(Kc.T, Lc))
     varHSIC = np.square(1/6. * np.multiply(Kc,Lc))
     varHSIC = 1/m/(m-1)* (np.sum(varHSIC) - np.sum(npml.diag(varHSIC)))
@@ -75,5 +77,6 @@ def hsicTestGamma(X,Y,alpha=0.05,params =[-1.,-1.]):
     al = np.square(mHSIC) / varHSIC   
     bet = varHSIC*m / mHSIC
     treshold = gamma(al, bet).ppf(1-alpha)
-    return {"testStat" : testStat, "treshold":treshold,
-            "mHSIC": mHSIC, "varHSIC" : varHSIC }
+#    return {"testStat" : testStat, "treshold":treshold,
+ #           "mHSIC": mHSIC, "varHSIC" : varHSIC }
+    return anmHSIC
